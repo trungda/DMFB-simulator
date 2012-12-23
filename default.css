@@ -1,0 +1,9 @@
+#container {
+  position: relative;
+}
+
+#chip {
+  position: absolute;
+  left: 0%,
+  margin: 0px;
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Pin-constrained design DMFB </title>
+    <link rel = "stylesheet" type="text/css" href = "default.css">
+    <script src = "js/kinetic-v4.2.0.min.js"></script>
+    <script src = "js/chip.js"></script>
+    <script src = "js/StringStream.js"></script>
+    <script src = "js/Supporters.js"></script>
+    <script src = "js/MainProcess.js"></script>
+  </head>
+
+  <body>
+    <div id = "container">
+      <div id ="chip"> 
+        <script>
+	  Init();
+        </script>
+      </div>
+
+      <div id = "selector">
+	Select the data file benchmark: <br>
+	<input id = "file" type = "file" onchange = "startRead()"
+      </div>
+
+    </div>
+  </body>
+
+</html>

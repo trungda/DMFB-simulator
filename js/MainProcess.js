@@ -202,7 +202,7 @@ function Run() {
   layer.draw();
   CurrentTime = 1;
   State = 1;
-  interval = setInterval(MoveToNextTime, 2000);  
+  interval = setInterval(MoveToNextTime, 1500);  
 }
 
 function Toggle() {
@@ -215,7 +215,7 @@ function Toggle() {
   else {
     ToggleButton.innerHTML = "Pause!!!";
     State = 1;
-    interval = setInterval(MoveToNextTime, 2000);
+    interval = setInterval(MoveToNextTime, 1500);
   }
 }
 

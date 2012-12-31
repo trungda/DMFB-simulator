@@ -16,10 +16,14 @@ var timer;
 var nTimeSteps, CurrentTime;
 var interval;
 
+var ToggleButton;
+var State; // 0 = paused 1 = running
+
 function Init() {
   TopLeft = new Point(ELECTRODE_SIZE * 8, ELECTRODE_SIZE);
   chip = new Chip();
   CurrentTime = 0;
+  State = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -45,9 +49,9 @@ function LoadChip(FileContent) {
     var ActuationSequence = ss.ssparseString();
     for (var j = 0; j < ActuationSequence.length; j ++) 
       if (!(ActuationSequence[j] == '1' || ActuationSequence[j] != '0' || ActuationSequence[j] != 'X')) {
-	alert("Error: Wrong file format.");
-	window.location.reload();
-	return;
+        alert("Error: Wrong file format.");
+        window.location.reload();
+        return;
       }
     chip.addNewPin(y, x, ActuationSequence);
   }
@@ -152,21 +156,22 @@ function MoveToNextTime() {
       var yy = y + dy[k];
       var index = yy * chip.getWidth() + xx;
       if (0 <= xx && xx < chip.getWidth() && 0 <= yy && yy < chip.getHeight()) {
-	if (chip.getElectrode(index).getState() == HIGH) {
-	  droplets[i].mP.set(xx, yy);
-	  droplets[i].mCircle.transitionTo({
-	    x: TopLeft.getX() + xx * ELECTRODE_SIZE + ELECTRODE_SIZE / 2,
-	    y: TopLeft.getY() + yy * ELECTRODE_SIZE + ELECTRODE_SIZE / 2,
-	    duration: 1,
-	  });
-	  break;
-	}
+        if (chip.getElectrode(index).getState() == HIGH) {
+          droplets[i].mP.set(xx, yy);
+          droplets[i].mCircle.transitionTo({
+            x: TopLeft.getX() + xx * ELECTRODE_SIZE + ELECTRODE_SIZE / 2,
+            y: TopLeft.getY() + yy * ELECTRODE_SIZE + ELECTRODE_SIZE / 2,
+            duration: 1,
+          });
+          break;
+        }
       }
     }
   }
   CurrentTime ++;
   if (CurrentTime >= nTimeSteps) {
     clearInterval(interval);
+    State = 0;
   }
 }
 
@@ -196,7 +201,22 @@ function Run() {
   }
   layer.draw();
   CurrentTime = 1;
+  State = 1;
   interval = setInterval(MoveToNextTime, 2000);  
+}
+
+function Toggle() {
+  ToggleButton = document.getElementById("toggle");
+  if (State == 1) {
+    ToggleButton.innerHTML = "Resume"
+    State = 0;
+    clearInterval(interval);
+  }
+  else {
+    ToggleButton.innerHTML = "Pause!!!";
+    State = 1;
+    interval = setInterval(MoveToNextTime, 2000);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////

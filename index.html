@@ -14,16 +14,19 @@
     <div id = "container">
       <div id ="chip"> 
         <script>
-	  Init();
+          Init();
         </script>
       </div>
 
       <div id = "selector">
-	Select the data file benchmark: <br>
-	<input id = "file" type = "file" onchange = "startRead()"
+        Select the data file benchmark: <br>
+        <input id = "file" type = "file" onchange = "startRead()" />
       </div>
-
     </div>
+
+    <button id="toggle" onclick="Toggle()">
+        Pause!!!
+    </button>
   </body>
 
 </html>

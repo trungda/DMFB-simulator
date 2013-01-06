@@ -45,8 +45,8 @@ function getHeight() {
   return this.mHeight;
 }
 
-function addNewPin(x, y, ActuationSequence) {
-  this.mPin.push(new Pin(x, y, ActuationSequence));  
+function addNewPin(PinID, y, x, ActuationSequence) {
+  this.mPin.push(new Pin(PinID, y, x, ActuationSequence));  
 }
 
 function addNewElectrode(x, y, state) {

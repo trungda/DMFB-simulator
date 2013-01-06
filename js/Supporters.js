@@ -30,16 +30,22 @@ function getY() {
 
 ///////////////////////////////////////////////////////////////////////////
 // PIN class
-function Pin(x, y, ActuationSequence) {
+function Pin(PinID, x, y, ActuationSequence) {
+  this.mPinID = PinID;
   this.mP = new Point(x, y);
   this.mActuation = ActuationSequence;
   this.getStateAtTime = getStateAtTime;
   this.set = set;
   this.getP = getP;
+  this.getPinID = getPinID;
 }
 
 function getP() {
   return this.mP;
+}
+
+function getPinID() {
+  return this.mPinID;
 }
 
 function getStateAtTime(t) {
@@ -81,7 +87,7 @@ function Droplet() {
       color: "black",
       blur: 10,
       offset: [5, 5],
-      opacity: 0.8
+      opacity: 0.3
     },
     fill: "rgb(" + this.mR + ", " + this.mG + ", " + this.mB + ")",
   });

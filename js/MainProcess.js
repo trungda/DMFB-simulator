@@ -41,11 +41,19 @@ function LoadChip(FileContent) {
     window.location.reload();
     return;
   }
+  // add electrodes 
+  for (var i = 0; i < chip.getHeight(); i ++)
+    for (var j = 0; j < chip.getWidth(); j ++) {
+      chip.addNewElectrode(TopLeft.getX() + ELECTRODE_SIZE * j, TopLeft.getY() + ELECTRODE_SIZE * i, NOPIN);
+    }
+
+  // add pins to the list of pins
   for (var i = 0; i < nPins; i ++) {
-    // coordination in web page is different from the coordination of data
+    // coordination in web page is different from the coordination in data file
     // so it is neccesary to switch the positinon of x and y
     var x = ss.ssparseInt();
     var y = ss.ssparseInt();
+    var PinID = ss.ssparseInt(); 
     var ActuationSequence = ss.ssparseString();
     for (var j = 0; j < ActuationSequence.length; j ++) 
       if (!(ActuationSequence[j] == '1' || ActuationSequence[j] != '0' || ActuationSequence[j] != 'X')) {
@@ -53,12 +61,8 @@ function LoadChip(FileContent) {
         window.location.reload();
         return;
       }
-    chip.addNewPin(y, x, ActuationSequence);
+    chip.addNewPin(PinID, y, x, ActuationSequence);
   }
-  for (var i = 0; i < chip.getHeight(); i ++)
-    for (var j = 0; j < chip.getWidth(); j ++) {
-      chip.addNewElectrode(TopLeft.getX() + ELECTRODE_SIZE * j, TopLeft.getY() + ELECTRODE_SIZE * i, NOPIN);
-    }
 }
 
 // Draw foundation of a chip
@@ -125,6 +129,22 @@ function Draw() {
   for (var i = 0; i < chip.getNumOfElectrode(); i ++) {
     layer.add(chip.mElectrode[i].mRect);
   }
+  // add pin id to layer
+  for (var i = 0; i < chip.getNumOfPin(); i ++) {
+    var xx = chip.getPin(i).getP().getX();
+    var yy = chip.getPin(i).getP().getY();
+    var PinIDText = new Kinetic.Text({
+      text: chip.getPin(i).getPinID().toString(),
+      fontSize: 13,
+      textFill: "black",
+      align: "center",
+    });
+    var w = PinIDText.getWidth() / 2;
+    var h = PinIDText.getHeight() / 2;
+    PinIDText.setX(TopLeft.getX() + xx * ELECTRODE_SIZE + ELECTRODE_SIZE / 2 - w);
+    PinIDText.setY(TopLeft.getY() + yy * ELECTRODE_SIZE + ELECTRODE_SIZE / 2 - h);
+    layer.add(PinIDText);
+  }
   // add the layer to the stage
   stage.add(layer);
 }
@@ -175,6 +195,13 @@ function MoveToNextTime() {
   }
 }
 
+// Check whether a cell is on boundary of the chip or not
+function isBoundary(x, y) {
+  if (x == 0 || y == 0) return true;
+  if (x == chip.getWidth() - 1 || y == chip.getHeight() - 1) return true;
+  return false;
+}
+
 function Run() {
   nTimeSteps = chip.getTimeSteps();
   droplets = new Array();
@@ -182,7 +209,8 @@ function Run() {
     var x = chip.getPin(i).getP().getX();
     var y = chip.getPin(i).getP().getY();
     var index = y * chip.getWidth() + x;
-    if (chip.getPin(i).getStateAtTime(0) == '1') {
+//    console.log(x + " " + y);
+    if (chip.getPin(i).getStateAtTime(0) == '1' && isBoundary(x, y)) {
       // new droplet appears here
       chip.changeElectrode(index, HIGH);
       var droplet = new Droplet();

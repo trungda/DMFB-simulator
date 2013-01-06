@@ -74,6 +74,7 @@ function getState() {
 ///////////////////////////////////////////////////////////////////////////
 // DROPLET class
 function Droplet() {
+  this.AppearAt = 0;
   this.mP = new Point(0, 0);
   this.mR = Math.floor(Math.random() * 1000000) % 256;
   this.mG = 128 + Math.floor(Math.random() * 1000000) % 256;

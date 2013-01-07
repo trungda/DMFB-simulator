@@ -57,8 +57,17 @@ function LoadChip(FileContent) {
     // so it is neccesary to switch the positinon of x and y
     var x = ss.ssparseInt();
     var y = ss.ssparseInt();
-    var PinID = ss.ssparseInt(); 
-    var ActuationSequence = ss.ssparseString();
+    var token = ss.ssparseString();
+    var PinID;
+    var ActuationSequence;
+    if (ss.StringToInt(token) != 0) { // if the next number != 0, it is PinID
+      PinID = ss.StringToInt(token);
+      ActuationSequence = ss.ssparseString();
+    }
+    else { // otherwise, it is ActuactionSequence
+      PinID = 0;
+      ActuationSequence = token;
+    }
     for (var j = 0; j < ActuationSequence.length; j ++) 
       if (!(ActuationSequence[j] == '1' || ActuationSequence[j] != '0' || ActuationSequence[j] != 'X')) {
         alert("Error: Wrong file format.");
@@ -66,8 +75,7 @@ function LoadChip(FileContent) {
         return;
       }
     chip.addNewPin(PinID, y, x, ActuationSequence);
-  }
-
+  }  
   // add droplets to the list of droplets
   var nDroplets = ss.ssparseInt();
   droplets = new Array();
@@ -81,6 +89,19 @@ function LoadChip(FileContent) {
     droplet.mCircle.setX(TopLeft.getX() + x * ELECTRODE_SIZE + ELECTRODE_SIZE / 2);
     droplet.mCircle.setY(TopLeft.getY() + y * ELECTRODE_SIZE + ELECTRODE_SIZE / 2);
     droplets.push(droplet);
+  }
+  if (nDroplets == 0) {
+    for (var i = 0; i < nPins; i ++) 
+      if (chip.getPin(i).getStateAtTime(0) == '1') {
+	var droplet = new Droplet();
+	var x = chip.getPin(i).getP().getX();
+	var y = chip.getPin(i).getP().getY();
+	droplet.AppearAt = 0;
+	droplet.mP.set(x, y);
+	droplet.mCircle.setX(TopLeft.getX() + x * ELECTRODE_SIZE + ELECTRODE_SIZE / 2);
+	droplet.mCircle.setY(TopLeft.getY() + y * ELECTRODE_SIZE + ELECTRODE_SIZE / 2);
+	droplets.push(droplet);
+      }
   }
 }
 
@@ -166,7 +187,9 @@ function Draw() {
     var h = PinIDText.getHeight() / 2;
     PinIDText.setX(TopLeft.getX() + xx * ELECTRODE_SIZE + ELECTRODE_SIZE / 2 - w);
     PinIDText.setY(TopLeft.getY() + yy * ELECTRODE_SIZE + ELECTRODE_SIZE / 2 - h);
-    BaseLayer.add(PinIDText);
+    if (chip.getPin(i).getPinID() != 0) { // if PinID != 0 -> print
+      BaseLayer.add(PinIDText);
+    }
   }
   
   // add droplets to BaseLayer

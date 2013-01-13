@@ -163,8 +163,15 @@ function Draw() {
     height: chip.getHeight() * 2 * ELECTRODE_SIZE,
   });
   BaseLayer = new Kinetic.Layer();
-  DropletLayer = new Kinetic.Layer();
-
+  stage.add(BaseLayer);
+  DropletLayer = new Array();
+  for (var i = 0; i < 3; i ++) {
+    var newLayer = new Kinetic.Layer();
+    DropletLayer.push(newLayer);    
+  }
+  for (var i = 0; i < 3; i ++) {
+    stage.add(DropletLayer[i]);
+  }
   // add boundary
   AddBoundary();
   
@@ -192,14 +199,11 @@ function Draw() {
     }
   }
   
-  // add droplets to BaseLayer
+  // add droplets to DropletLayer
   for (var i = 0; i < droplets.length; i ++) 
     if (droplets[i].AppearAt == 0) {
-      BaseLayer.add(droplets[i].mCircle);
+      DropletLayer[i % 3].add(droplets[i].mCircle);
     }
-  // add BaseLayer & DropletLayer to the stage
-  stage.add(BaseLayer);
-//  stage.add(DropletLayer);
 }
 
 function InSide(xx, yy) {
@@ -208,6 +212,7 @@ function InSide(xx, yy) {
 
 function MoveToNextTime() {
   timer.setText("" + CurrentTime + "");
+//  console.log(chip.getNumOfPin());
   for (var i = 0; i < chip.getNumOfPin(); i ++) {
     var x = chip.getPin(i).getP().getX();
     var y = chip.getPin(i).getP().getY();
@@ -222,14 +227,16 @@ function MoveToNextTime() {
     else {
       state = DONTCARE;
     }
-    chip.mElectrode[index].mRect.setFill(state);
+    if (CurrentTime > 0 && chip.getPin(i).getStateAtTime(CurrentTime - 1) != chip.getPin(i).getStateAtTime(CurrentTime)) {
+      chip.mElectrode[index].mRect.setFill(state);
+    }
   }
   
   var newDroplets = new Array();
   for (var i = 0; i < droplets.length; i ++) 
     if (droplets[i].AppearAt <= CurrentTime) {
       if (droplets[i].AppearAt == CurrentTime && CurrentTime != 0) {
-	BaseLayer.add(droplets[i].mCircle);
+	DropletLayer[i % 3].add(droplets[i].mCircle);
       }
       var x = droplets[i].getP().getX();
       var y = droplets[i].getP().getY();
@@ -274,13 +281,17 @@ function MoveToNextTime() {
     }
   for (var i = 0; i < newDroplets.length; i ++) {
     droplets.push(newDroplets[i]);
-    BaseLayer.add(droplets[droplets.length - 1].mCircle);
+    DropletLayer.add(droplets[droplets.length - 1].mCircle);
+  }
+  BaseLayer.draw();
+  for (var i = 0; i < 3; i ++) {
+    DropletLayer[i].draw();
   }
   CurrentTime ++;
   if (CurrentTime >= nTimeSteps) {
     clearInterval(interval);
     State = 0;
-  }
+  }  
 }
 
 // Check whether a cell is on boundary of the chip or not
@@ -309,6 +320,7 @@ function Run() {
     }
   }
   BaseLayer.draw();
+  for (var i = 0; i < 3; i ++) DropletLayer[i].draw();
   CurrentTime = 1;
   State = 1;
   interval = setInterval(MoveToNextTime, IntervalTime);

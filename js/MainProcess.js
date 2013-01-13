@@ -159,8 +159,8 @@ function AddBoundary() {
 function Draw() {
   stage = new Kinetic.Stage({
     container: "chip",
-    width: chip.getWidth() * 2 * ELECTRODE_SIZE,
-    height: chip.getHeight() * 2 * ELECTRODE_SIZE,
+    width: chip.getWidth() * ELECTRODE_SIZE + 500,
+    height: chip.getHeight() * ELECTRODE_SIZE + 500,
   });
   BaseLayer = new Kinetic.Layer();
   stage.add(BaseLayer);
@@ -179,7 +179,6 @@ function Draw() {
   for (var i = 0; i < chip.getNumOfElectrode(); i ++) {
     BaseLayer.add(chip.mElectrode[i].mRect);
   }
-  
   // add pin id to BaseLayer
   for (var i = 0; i < chip.getNumOfPin(); i ++) {
     var xx = chip.getPin(i).getP().getX();
